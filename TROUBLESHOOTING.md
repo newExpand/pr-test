@@ -243,3 +243,149 @@
    }
    ```
 2. 순환 참조 처리 로직 추가
+
+## Phase 2 관련 문제
+
+### 1. 자동 라벨링 문제
+
+#### 증상
+
+- 라벨이 적용되지 않음
+- 잘못된 라벨이 적용됨
+- 파일 패턴 매칭 실패
+
+#### 해결 방법
+
+1. 라벨링 규칙 확인
+
+   ```typescript
+   const labelRules = [
+     {
+       name: 'backend',
+       filePatterns: ['src/services/**/*'],
+     },
+   ];
+   ```
+
+2. 파일 경로 매칭 확인
+
+   ```bash
+   # 테스트 파일 경로 확인
+   ls -R src/services/
+   ls -R src/test-files/services/
+   ```
+
+3. Git 작업 디렉토리 확인
+   ```bash
+   git status
+   git add -f src/test-files/services/
+   ```
+
+### 2. 리뷰어 할당 문제
+
+#### 증상
+
+- 리뷰어가 할당되지 않음
+- 특정 리뷰어에게 과도한 할당
+- 팀 매칭 실패
+
+#### 해결 방법
+
+1. 리뷰어 설정 확인
+
+   ```typescript
+   const reviewerConfig = {
+     username: 'reviewer',
+     team: 'backend',
+     maxReviews: 5,
+   };
+   ```
+
+2. 워크로드 밸런싱 확인
+
+   ```typescript
+   // 현재 리뷰 수 확인
+   const currentReviews = await githubClient.getCurrentReviews(username);
+   ```
+
+3. 팀 매칭 규칙 검증
+   ```typescript
+   // 팀 매칭 로직 확인
+   const matchedReviewers = reviewers.filter((r) => r.team === team);
+   ```
+
+### 3. 충돌 감지 문제
+
+#### 증상
+
+- 충돌 감지 실패
+- 잘못된 충돌 알림
+- 알림 전송 실패
+
+#### 해결 방법
+
+1. PR 상태 확인
+
+   ```typescript
+   const prStatus = await githubClient.getPullRequestStatus(prNumber);
+   console.log('Mergeable State:', prStatus.mergeable_state);
+   ```
+
+2. 충돌 상태 검증
+
+   ```bash
+   # 로컬에서 충돌 상태 확인
+   git fetch origin
+   git checkout feature-branch
+   git merge main
+   ```
+
+3. 알림 설정 확인
+   ```typescript
+   // 알림 서비스 설정
+   const notificationConfig = {
+     channels: ['slack', 'email'],
+     templates: {
+       conflict: '충돌이 발생했습니다: ${prUrl}',
+     },
+   };
+   ```
+
+### 4. 통합 테스트 문제
+
+#### 증상
+
+- 테스트 타임아웃
+- 임시 파일 정리 실패
+- Git 작업 실패
+
+#### 해결 방법
+
+1. 테스트 타임아웃 설정
+
+   ```typescript
+   it('테스트 케이스', async () => {
+     // 테스트 코드
+   }, 10000); // 타임아웃 10초로 설정
+   ```
+
+2. 임시 파일 정리
+
+   ```typescript
+   afterAll(async () => {
+     await fs.rm('src/test-files', { recursive: true, force: true });
+     await execAsync('git checkout main');
+     await execAsync(`git branch -D ${testBranch}`);
+   });
+   ```
+
+3. Git 작업 에러 처리
+   ```typescript
+   try {
+     await execAsync('git add .');
+     await execAsync('git commit -m "test commit"');
+   } catch (error) {
+     console.error('Git 작업 실패:', error);
+     // 정리 작업 수행
+   }
+   ```
