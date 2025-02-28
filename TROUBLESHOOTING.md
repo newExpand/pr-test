@@ -125,3 +125,121 @@
 1. GitHub API 사용량 확인
 2. 캐싱 구현 검토
 3. 요청 간격 조정
+
+## 성능 메트릭 관련 문제
+
+### 1. API 호출 시간 측정 부정확
+
+#### 증상
+
+- 모의 테스트 환경에서 API 호출 시간이 0ms로 측정
+- 실제 API 호출과 테스트 환경의 시간 측정 불일치
+
+#### 해결 방법
+
+1. 모의 API 응답에 지연 추가
+   ```typescript
+   mockImplementation(async () => {
+     await new Promise(resolve => setTimeout(resolve, 10));
+     return { data: { ... } };
+   });
+   ```
+2. 실제 API 호출 시간 측정 로직 개선
+   ```typescript
+   const startTime = Date.now();
+   try {
+     const result = await operation();
+     const duration = Date.now() - startTime;
+     this.metricsCollector?.recordApiCall(duration);
+     return result;
+   } catch (error) {
+     const duration = Date.now() - startTime;
+     this.metricsCollector?.recordApiCall(duration);
+     throw error;
+   }
+   ```
+
+### 2. 메모리 사용량 모니터링
+
+#### 증상
+
+- 메모리 사용량 측정값 불안정
+- 가비지 컬렉션으로 인한 측정 오차
+
+#### 해결 방법
+
+1. 메모리 스냅샷 시점 조정
+2. 주기적인 메모리 사용량 기록
+3. 평균값 기반 측정
+
+## 에러 추적 관련 문제
+
+### 1. 재시도 메커니즘 동작 이슈
+
+#### 증상
+
+- 재시도 간격이 너무 짧거나 김
+- 불필요한 재시도 발생
+
+#### 해결 방법
+
+1. 지수 백오프 설정 최적화
+   ```typescript
+   const retryConfig = {
+     maxAttempts: 3,
+     initialDelay: 1000,
+     maxDelay: 5000,
+     backoffFactor: 2,
+   };
+   ```
+2. 재시도 가능 여부 판단 로직 개선
+
+### 2. 에러 컨텍스트 누락
+
+#### 증상
+
+- 에러 스택 트레이스 불완전
+- 에러 발생 컨텍스트 정보 부족
+
+#### 해결 방법
+
+1. 에러 컨텍스트 수집 강화
+   ```typescript
+   const errorContext = {
+     operationId: 'unique-id',
+     operationType: 'github-api',
+     timestamp: new Date().toISOString(),
+     additionalData: { ... },
+   };
+   ```
+2. 에러 래핑 구현으로 컨텍스트 보존
+
+## 로깅 시스템 문제
+
+### 1. 구조화된 로그 포맷 이슈
+
+#### 증상
+
+- JSON 형식 로그 파싱 오류
+- 중첩된 객체 직렬화 문제
+
+#### 해결 방법
+
+1. 로그 포맷터 개선
+   ```typescript
+   private formatMessage(logMessage: LogMessage): string {
+     const { level, message, context, error } = logMessage;
+     return JSON.stringify({
+       timestamp: context.timestamp,
+       level: level.toUpperCase(),
+       message,
+       context: { ...context },
+       error: error ? {
+         name: error.name,
+         message: error.message,
+         stack: error.stack,
+       } : undefined,
+     });
+   }
+   ```
+2. 순환 참조 처리 로직 추가
