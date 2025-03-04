@@ -243,3 +243,590 @@
    }
    ```
 2. 순환 참조 처리 로직 추가
+
+## Phase 2 관련 문제
+
+### 1. 자동 라벨링 문제
+
+#### 증상
+
+- 라벨이 적용되지 않음
+- 잘못된 라벨이 적용됨
+- 파일 패턴 매칭 실패
+
+#### 해결 방법
+
+1. 라벨링 규칙 확인
+
+   ```typescript
+   const labelRules = [
+     {
+       name: 'backend',
+       filePatterns: ['src/services/**/*'],
+     },
+   ];
+   ```
+
+2. 파일 경로 매칭 확인
+
+   ```bash
+   # 테스트 파일 경로 확인
+   ls -R src/services/
+   ls -R src/test-files/services/
+   ```
+
+3. Git 작업 디렉토리 확인
+   ```bash
+   git status
+   git add -f src/test-files/services/
+   ```
+
+### 2. 리뷰어 할당 문제
+
+#### 증상
+
+- 리뷰어가 할당되지 않음
+- 특정 리뷰어에게 과도한 할당
+- 팀 매칭 실패
+
+#### 해결 방법
+
+1. 리뷰어 설정 확인
+
+   ```typescript
+   const reviewerConfig = {
+     username: 'reviewer',
+     team: 'backend',
+     maxReviews: 5,
+   };
+   ```
+
+2. 워크로드 밸런싱 확인
+
+   ```typescript
+   // 현재 리뷰 수 확인
+   const currentReviews = await githubClient.getCurrentReviews(username);
+   ```
+
+3. 팀 매칭 규칙 검증
+   ```typescript
+   // 팀 매칭 로직 확인
+   const matchedReviewers = reviewers.filter((r) => r.team === team);
+   ```
+
+### 3. 충돌 감지 문제
+
+#### 증상
+
+- 충돌 감지 실패
+- 잘못된 충돌 알림
+- 알림 전송 실패
+
+#### 해결 방법
+
+1. PR 상태 확인
+
+   ```typescript
+   const prStatus = await githubClient.getPullRequestStatus(prNumber);
+   console.log('Mergeable State:', prStatus.mergeable_state);
+   ```
+
+2. 충돌 상태 검증
+
+   ```bash
+   # 로컬에서 충돌 상태 확인
+   git fetch origin
+   git checkout feature-branch
+   git merge main
+   ```
+
+3. 알림 설정 확인
+   ```typescript
+   // 알림 서비스 설정
+   const notificationConfig = {
+     channels: ['slack', 'email'],
+     templates: {
+       conflict: '충돌이 발생했습니다: ${prUrl}',
+     },
+   };
+   ```
+
+### 4. 통합 테스트 문제
+
+#### 증상
+
+- 테스트 타임아웃
+- 임시 파일 정리 실패
+- Git 작업 실패
+
+#### 해결 방법
+
+1. 테스트 타임아웃 설정
+
+   ```typescript
+   it('테스트 케이스', async () => {
+     // 테스트 코드
+   }, 10000); // 타임아웃 10초로 설정
+   ```
+
+2. 임시 파일 정리
+
+   ```typescript
+   afterAll(async () => {
+     await fs.rm('src/test-files', { recursive: true, force: true });
+     await execAsync('git checkout main');
+     await execAsync(`git branch -D ${testBranch}`);
+   });
+   ```
+
+3. Git 작업 에러 처리
+   ```typescript
+   try {
+     await execAsync('git add .');
+     await execAsync('git commit -m "test commit"');
+   } catch (error) {
+     console.error('Git 작업 실패:', error);
+     // 정리 작업 수행
+   }
+   ```
+
+## Phase 4 관련 문제
+
+### 1. 코드 변경 분석 문제
+
+#### 증상
+
+- 복잡도 계산 결과가 부정확함
+- 코드 스멜 감지가 누락됨
+- 보안 이슈 탐지가 과도하게 민감함
+
+#### 해결 방법
+
+1. 복잡도 계산 로직 검증
+
+   ```typescript
+   // 순환 복잡도 계산 검증
+   const complexity = calculateCyclomaticComplexity(content);
+   console.log('Cyclomatic Complexity:', complexity);
+
+   // 인지 복잡도 계산 검증
+   const cognitive = calculateCognitiveComplexity(content);
+   console.log('Cognitive Complexity:', cognitive);
+   ```
+
+2. 코드 스멜 감지 규칙 조정
+
+   ```typescript
+   const codeSmells = detectCodeSmells(content, {
+     maxLineLength: 120,
+     maxNestingLevel: 4,
+     maxFunctionLength: 50,
+   });
+   ```
+
+3. 보안 이슈 감도 조정
+   ```typescript
+   const securityIssues = detectSecurityIssues(content, {
+     severity: 'high',
+     ignorePatterns: ['test/', 'mock/'],
+   });
+   ```
+
+### 2. 전문가 매칭 시스템 문제
+
+#### 증상
+
+- 부적절한 리뷰어 매칭
+- 점수 계산 오류
+- 워크로드 불균형
+
+#### 해결 방법
+
+1. 전문성 점수 계산 검증
+
+   ```typescript
+   const scores = {
+     language: calculateLanguageScore(reviewer.languages, analysis.languages),
+     framework: calculateFrameworkScore(
+       reviewer.frameworks,
+       analysis.frameworks
+     ),
+     domain: calculateDomainScore(reviewer.domains, analysis.domains),
+     pattern: calculatePatternScore(reviewer.filePatterns, analysis.patterns),
+   };
+   console.log('Expertise Scores:', scores);
+   ```
+
+2. 워크로드 밸런싱 조정
+
+   ```typescript
+   const workloadScore = calculateWorkloadScore({
+     currentReviews: reviewer.currentReviews,
+     maxReviews: reviewer.maxReviews,
+     minScore: 0.3,
+   });
+   ```
+
+3. 매칭 기준 최적화
+   ```typescript
+   const matchCriteria = {
+     minExpertiseScore: 0.5,
+     maxWorkload: 0.8,
+     requiredDomains: ['backend'],
+   };
+   ```
+
+### 3. 자동 머지 시스템 문제
+
+#### 증상
+
+- 머지 조건 검증 실패
+- 테스트 상태 확인 오류
+- 재시도 메커니즘 무한 루프
+
+#### 해결 방법
+
+1. 머지 조건 검증 강화
+
+   ```typescript
+   const canMerge = await validateMergeability(prNumber, {
+     requireApproval: true,
+     requiredChecks: ['build', 'test'],
+     blockingLabels: ['do-not-merge'],
+   });
+   ```
+
+2. 테스트 상태 모니터링 개선
+
+   ```typescript
+   const testStatus = await validateTestStatus(checks, {
+     timeout: 3600000, // 1시간
+     requiredChecks: ['ci/build', 'ci/test'],
+     waitForChecks: true,
+   });
+   ```
+
+3. 재시도 로직 최적화
+   ```typescript
+   const retryConfig = {
+     maxAttempts: 3,
+     initialDelay: 1000,
+     maxDelay: 5000,
+     backoffFactor: 2,
+     retryableErrors: ['CONFLICT', 'NETWORK_ERROR'],
+   };
+   ```
+
+### 4. 승인 검증 문제
+
+#### 증상
+
+- 승인 상태 잘못된 판단
+- 블로킹 라벨 무시
+- 자기 승인 정책 오작동
+
+#### 해결 방법
+
+1. 승인 상태 검증 로직 개선
+
+   ```typescript
+   const approvalStatus = validateApprovalStatus(reviews, {
+     requiredReviewers: ['senior-dev', 'tech-lead'],
+     requiredApprovalsCount: 2,
+     allowAuthorSelfApproval: false,
+   });
+   ```
+
+2. 블로킹 라벨 처리 강화
+
+   ```typescript
+   const hasBlockingLabels = checkBlockingLabels(labels, {
+     blockingPatterns: ['hold', 'wip', 'do-not-merge'],
+     caseSensitive: false,
+   });
+   ```
+
+3. 리뷰어 권한 검증
+   ```typescript
+   const isValidReviewer = validateReviewerPermissions(reviewer, {
+     requiredPermission: 'write',
+     excludeAuthor: true,
+     teamMembership: ['engineering'],
+   });
+   ```
+
+### 5. 테스트 상태 검증 문제
+
+#### 증상
+
+- 체크 상태 잘못된 해석
+- 타임아웃 처리 오류
+- 필수 체크 누락
+
+#### 해결 방법
+
+1. 체크 상태 해석 개선
+
+   ```typescript
+   const checkStatus = validateCheckStatus(checks, {
+     requiredStates: ['success'],
+     allowedConclusions: ['success', 'skipped'],
+     ignoreChecks: ['optional-check'],
+   });
+   ```
+
+2. 타임아웃 처리 강화
+
+   ```typescript
+   const isTimedOut = checkTimeout(check, {
+     maxDuration: 3600000, // 1시간
+     warningThreshold: 0.8, // 80% 경과 시 경고
+   });
+   ```
+
+3. 필수 체크 검증
+   ```typescript
+   const hasRequiredChecks = validateRequiredChecks(checks, {
+     required: ['build', 'test', 'lint'],
+     allowPartialSuccess: false,
+   });
+   ```
+
+### 6. 성능 및 안정성 문제
+
+#### 증상
+
+- 대규모 PR 분석 시 성능 저하
+- 메모리 사용량 급증
+- API 요청 병목 현상
+
+#### 해결 방법
+
+1. 성능 최적화
+
+   ```typescript
+   // 분할 처리로 메모리 사용 최적화
+   const analyzeInChunks = async (files: PullRequestFile[], chunkSize = 10) => {
+     const results = [];
+     for (let i = 0; i < files.length; i += chunkSize) {
+       const chunk = files.slice(i, i + chunkSize);
+       results.push(await analyzeFiles(chunk));
+       await new Promise((resolve) => setTimeout(resolve, 100));
+     }
+     return results.flat();
+   };
+   ```
+
+2. 캐시 구현
+
+   ```typescript
+   const cacheConfig = {
+     ttl: 300000, // 5분
+     maxSize: 1000,
+     cleanupInterval: 60000, // 1분
+   };
+   ```
+
+3. API 요청 최적화
+   ```typescript
+   const batchProcessor = new BatchProcessor({
+     maxBatchSize: 100,
+     maxWaitTime: 1000,
+     retryOptions: {
+       maxAttempts: 3,
+       backoff: true,
+     },
+   });
+   ```
+
+## CLI 도구 관련 문제
+
+### 1. 명령어 실행 실패
+
+#### 증상
+
+- 명령어가 인식되지 않음
+- 잘못된 인자 전달
+- 서브커맨드 오류
+
+#### 해결 방법
+
+1. 명령어 경로 확인
+
+   ```bash
+   which autopr
+   npm list -g autopr
+   ```
+
+2. 인자 형식 확인
+
+   ```bash
+   # PR 생성 예시
+   autopr pr create --title "제목" --body "내용" --head feature --base main
+
+   # 설정 변경 예시
+   autopr config set github.token "your-token"
+   ```
+
+3. 도움말 확인
+   ```bash
+   autopr --help
+   autopr pr --help
+   autopr config --help
+   ```
+
+### 2. 배치 작업 문제
+
+#### 증상
+
+- 일괄 처리 실패
+- 필터링 조건 미작동
+- 드라이 런 모드 오작동
+
+#### 해결 방법
+
+1. 필터링 조건 검증
+
+   ```typescript
+   const filters = {
+     authors: ['user1', 'user2'],
+     labels: ['bug', 'feature'],
+     state: 'open',
+     createdAfter: '2024-01-01',
+   };
+   ```
+
+2. 드라이 런 모드 테스트
+
+   ```bash
+   # 드라이 런 모드로 실행
+   autopr batch close --dry-run --authors user1,user2
+   ```
+
+3. 배치 작업 로그 확인
+   ```typescript
+   this.logger.debug('배치 작업 필터', { metadata: { filters } });
+   this.logger.debug('검색된 PR', { metadata: { prs: foundPRs } });
+   ```
+
+### 3. 템플릿 관리 문제
+
+#### 증상
+
+- 템플릿 생성/수정 실패
+- 기본 템플릿 덮어쓰기 오류
+- 메타데이터 손실
+
+#### 해결 방법
+
+1. 템플릿 저장소 확인
+
+   ```bash
+   ls -la .autopr/templates/
+   cat .autopr/templates/feature.json
+   ```
+
+2. 템플릿 유효성 검사
+
+   ```typescript
+   const template = {
+     name: 'feature',
+     description: '새로운 기능 개발을 위한 PR 템플릿',
+     content: {
+       title: 'feat: {기능명}',
+       body: '## 변경사항\n\n{변경내용}',
+     },
+   };
+   ```
+
+3. 기본 템플릿 보호
+   ```typescript
+   if (this.isDefaultTemplate(name)) {
+     throw new Error('기본 템플릿은 수정할 수 없습니다');
+   }
+   ```
+
+### 4. 통계 수집 문제
+
+#### 증상
+
+- 통계 데이터 누락
+- 잘못된 기간 계산
+- 출력 형식 오류
+
+#### 해결 방법
+
+1. 기간 설정 확인
+
+   ```typescript
+   const options = {
+     period: 'monthly',
+     startDate: '2024-01-01',
+     endDate: '2024-01-31',
+     maxResults: 100,
+   };
+   ```
+
+2. 데이터 수집 검증
+
+   ```typescript
+   this.logger.debug('수집된 PR 데이터', {
+     metadata: {
+       totalCount: stats.totalCount,
+       mergedCount: stats.mergedCount,
+       period: options.period,
+     },
+   });
+   ```
+
+3. 출력 형식 설정
+
+   ```bash
+   # JSON 형식으로 출력
+   autopr statistics --format json --period monthly
+
+   # 테이블 형식으로 출력
+   autopr statistics --format table --period monthly
+   ```
+
+### 5. 설정 관리 문제
+
+#### 증상
+
+- 설정 파일 로드 실패
+- 잘못된 설정값 저장
+- 설정 검증 오류
+
+#### 해결 방법
+
+1. 설정 파일 구조 확인
+
+   ```typescript
+   const config = {
+     github: {
+       token: 'your-token',
+       owner: 'owner',
+       repo: 'repo',
+     },
+     logLevel: 'info',
+   };
+   ```
+
+2. 설정 유효성 검사
+
+   ```typescript
+   const result = ConfigSchema.safeParse(config);
+   if (!result.success) {
+     this.logger.error('설정 유효성 검사 실패', result.error);
+   }
+   ```
+
+3. 설정 백업 관리
+
+   ```bash
+   # 설정 백업
+   cp .autopr/config.json .autopr/config.backup.json
+
+   # 설정 복원
+   cp .autopr/config.backup.json .autopr/config.json
+   ```
