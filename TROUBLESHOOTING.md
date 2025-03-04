@@ -638,3 +638,195 @@
      },
    });
    ```
+
+## CLI 도구 관련 문제
+
+### 1. 명령어 실행 실패
+
+#### 증상
+
+- 명령어가 인식되지 않음
+- 잘못된 인자 전달
+- 서브커맨드 오류
+
+#### 해결 방법
+
+1. 명령어 경로 확인
+
+   ```bash
+   which autopr
+   npm list -g autopr
+   ```
+
+2. 인자 형식 확인
+
+   ```bash
+   # PR 생성 예시
+   autopr pr create --title "제목" --body "내용" --head feature --base main
+
+   # 설정 변경 예시
+   autopr config set github.token "your-token"
+   ```
+
+3. 도움말 확인
+   ```bash
+   autopr --help
+   autopr pr --help
+   autopr config --help
+   ```
+
+### 2. 배치 작업 문제
+
+#### 증상
+
+- 일괄 처리 실패
+- 필터링 조건 미작동
+- 드라이 런 모드 오작동
+
+#### 해결 방법
+
+1. 필터링 조건 검증
+
+   ```typescript
+   const filters = {
+     authors: ['user1', 'user2'],
+     labels: ['bug', 'feature'],
+     state: 'open',
+     createdAfter: '2024-01-01',
+   };
+   ```
+
+2. 드라이 런 모드 테스트
+
+   ```bash
+   # 드라이 런 모드로 실행
+   autopr batch close --dry-run --authors user1,user2
+   ```
+
+3. 배치 작업 로그 확인
+   ```typescript
+   this.logger.debug('배치 작업 필터', { metadata: { filters } });
+   this.logger.debug('검색된 PR', { metadata: { prs: foundPRs } });
+   ```
+
+### 3. 템플릿 관리 문제
+
+#### 증상
+
+- 템플릿 생성/수정 실패
+- 기본 템플릿 덮어쓰기 오류
+- 메타데이터 손실
+
+#### 해결 방법
+
+1. 템플릿 저장소 확인
+
+   ```bash
+   ls -la .autopr/templates/
+   cat .autopr/templates/feature.json
+   ```
+
+2. 템플릿 유효성 검사
+
+   ```typescript
+   const template = {
+     name: 'feature',
+     description: '새로운 기능 개발을 위한 PR 템플릿',
+     content: {
+       title: 'feat: {기능명}',
+       body: '## 변경사항\n\n{변경내용}',
+     },
+   };
+   ```
+
+3. 기본 템플릿 보호
+   ```typescript
+   if (this.isDefaultTemplate(name)) {
+     throw new Error('기본 템플릿은 수정할 수 없습니다');
+   }
+   ```
+
+### 4. 통계 수집 문제
+
+#### 증상
+
+- 통계 데이터 누락
+- 잘못된 기간 계산
+- 출력 형식 오류
+
+#### 해결 방법
+
+1. 기간 설정 확인
+
+   ```typescript
+   const options = {
+     period: 'monthly',
+     startDate: '2024-01-01',
+     endDate: '2024-01-31',
+     maxResults: 100,
+   };
+   ```
+
+2. 데이터 수집 검증
+
+   ```typescript
+   this.logger.debug('수집된 PR 데이터', {
+     metadata: {
+       totalCount: stats.totalCount,
+       mergedCount: stats.mergedCount,
+       period: options.period,
+     },
+   });
+   ```
+
+3. 출력 형식 설정
+
+   ```bash
+   # JSON 형식으로 출력
+   autopr statistics --format json --period monthly
+
+   # 테이블 형식으로 출력
+   autopr statistics --format table --period monthly
+   ```
+
+### 5. 설정 관리 문제
+
+#### 증상
+
+- 설정 파일 로드 실패
+- 잘못된 설정값 저장
+- 설정 검증 오류
+
+#### 해결 방법
+
+1. 설정 파일 구조 확인
+
+   ```typescript
+   const config = {
+     github: {
+       token: 'your-token',
+       owner: 'owner',
+       repo: 'repo',
+     },
+     logLevel: 'info',
+   };
+   ```
+
+2. 설정 유효성 검사
+
+   ```typescript
+   const result = ConfigSchema.safeParse(config);
+   if (!result.success) {
+     this.logger.error('설정 유효성 검사 실패', result.error);
+   }
+   ```
+
+3. 설정 백업 관리
+
+   ```bash
+   # 설정 백업
+   cp .autopr/config.json .autopr/config.backup.json
+
+   # 설정 복원
+   cp .autopr/config.backup.json .autopr/config.json
+   ```
