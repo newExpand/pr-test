@@ -1,0 +1,18 @@
+# Ignore everything
+*
+*/*
+
+# But not these files...
+!*.md
+!.gitignore
+
+# Even if they are in subdirectories
+!*/
+
+# if the files to be tracked are in subdirectories
+!*/*.md
+!*/*/*.md
+!*/*/*/*.md
+!*/*/*/*/*.md
+
+node_modules
