@@ -150,3 +150,11 @@ This section contains extra details about the project configuration and deployme
 - PR 설명 생성 프롬프트 개선
 - 실제 변경사항 기반 설명 생성
 - 구체적인 테스트 방법 제시
+
+## PR 테스트 12
+열두 번째 PR 테스트를 위한 섹션입니다.
+
+### 추가된 기능
+- PR 설명 생성 프롬프트 개선
+- 실제 변경사항 기반 설명 생성
+- 구체적인 테스트 방법 제시
