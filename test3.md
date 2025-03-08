@@ -1,4 +1,3 @@
 # Test Document
 
-## Introduction
-This is a test document for AI features.
+This is a test document for AI features testing.
