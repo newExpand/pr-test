@@ -70,3 +70,11 @@ This section contains extra details about the project configuration and deployme
 - PR 자동 생성
 - AI 기반 PR 설명 생성
 - 리뷰어 자동 할당
+
+## PR 테스트 2
+두 번째 PR 테스트를 위한 섹션입니다.
+
+### 추가된 기능
+- 다국어 지원
+- 테마 설정
+- 사용자 설정
