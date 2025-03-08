@@ -214,3 +214,11 @@ This section contains extra details about the project configuration and deployme
 - 간단하고 명확한 PR 설명 생성
 - 실제 변경사항 기반 설명 생성
 - 불필요한 내용 제거
+
+## 프롬프트 테스트 8
+프롬프트 개선 및 diff 수정 후 테스트를 진행합니다.
+
+### 개선된 기능
+- 최근 커밋의 변경사항만 분석
+- 실제 변경사항 기반 설명 생성
+- 불필요한 내용 제거
