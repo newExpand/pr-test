@@ -166,3 +166,11 @@ This section contains extra details about the project configuration and deployme
 - 영어 프롬프트 작성
 - 한글 응답 생성
 - 프롬프트 개선
+
+## 프롬프트 테스트 2
+영어 프롬프트로 한글 응답을 생성하는 두 번째 테스트입니다.
+
+### 추가된 기능
+- 프롬프트 최적화
+- 응답 품질 향상
+- 포맷팅 개선
