@@ -230,3 +230,11 @@ This section contains extra details about the project configuration and deployme
 - base 브랜치와의 전체 변경사항 비교
 - 실제 변경사항 기반 설명 생성
 - 불필요한 내용 제거
+
+## 템플릿 테스트
+브랜치 패턴에 따른 템플릿 적용 테스트를 진행합니다.
+
+### 개선된 기능
+- 브랜치 패턴 기반 템플릿 적용
+- 기본 제목 자동 생성
+- Draft PR 설정 적용
