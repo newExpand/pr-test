@@ -238,3 +238,11 @@ This section contains extra details about the project configuration and deployme
 - 브랜치 패턴 기반 템플릿 적용
 - 기본 제목 자동 생성
 - Draft PR 설정 적용
+
+## 템플릿 테스트 2
+브랜치 패턴에 따른 템플릿 적용 테스트를 진행합니다.
+
+### 개선된 기능
+- AI가 브랜치 패턴의 템플릿을 따르도록 수정
+- 기본 제목 자동 생성
+- Draft PR 설정 적용
