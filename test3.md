@@ -182,3 +182,11 @@ This section contains extra details about the project configuration and deployme
 - 실제 변경사항 분석 강화
 - 템플릿 텍스트 제거
 - 구체적인 설명 추가
+
+## 프롬프트 테스트 4
+프롬프트 개선 및 diff 수정 후 테스트를 진행합니다.
+
+### 개선된 기능
+- 커밋된 변경사항만 분석
+- 실제 변경사항 기반 설명 생성
+- 상세한 PR 설명 제공
