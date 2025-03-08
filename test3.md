@@ -62,3 +62,11 @@ autopr merge
 
 ## Additional Information
 This section contains extra details about the project configuration and deployment.
+
+## PR 테스트
+이 섹션은 PR 생성 테스트를 위해 추가되었습니다.
+
+### 주요 기능
+- PR 자동 생성
+- AI 기반 PR 설명 생성
+- 리뷰어 자동 할당
