@@ -78,3 +78,11 @@ This section contains extra details about the project configuration and deployme
 - 다국어 지원
 - 테마 설정
 - 사용자 설정
+
+## PR 테스트 3
+세 번째 PR 테스트를 위한 섹션입니다.
+
+### 추가된 기능
+- PR 설명 생성 개선
+- 자동화된 테스트 추가
+- 성능 최적화
