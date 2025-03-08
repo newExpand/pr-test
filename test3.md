@@ -190,3 +190,11 @@ This section contains extra details about the project configuration and deployme
 - 커밋된 변경사항만 분석
 - 실제 변경사항 기반 설명 생성
 - 상세한 PR 설명 제공
+
+## 프롬프트 테스트 5
+프롬프트 개선 및 diff 수정 후 테스트를 진행합니다.
+
+### 개선된 기능
+- origin/main..HEAD로 변경사항 비교
+- 실제 변경사항 기반 설명 생성
+- 상세한 PR 설명 제공
