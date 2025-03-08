@@ -59,3 +59,6 @@ autopr merge
 2. PR 생성
 3. 코드 리뷰 진행
 4. 변경사항 반영
+
+## Additional Information
+This section contains extra details about the project configuration and deployment.
