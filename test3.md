@@ -158,3 +158,11 @@ This section contains extra details about the project configuration and deployme
 - PR 설명 생성 프롬프트 개선
 - 실제 변경사항 기반 설명 생성
 - 구체적인 테스트 방법 제시
+
+## 프롬프트 테스트
+이 섹션은 영어 프롬프트로 한글 응답을 생성하는 테스트를 위해 추가되었습니다.
+
+### 주요 기능
+- 영어 프롬프트 작성
+- 한글 응답 생성
+- 프롬프트 개선
