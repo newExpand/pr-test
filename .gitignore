@@ -15,10 +15,4 @@
 !*/*/*/*.md
 !*/*/*/*/*.md
 
-# Allow test files
-!*/__tests__/*.test.ts
-!*/*/__tests__/*.test.ts
-!*/*/*/__tests__/*.test.ts
-!*/*/*/*/__tests__/*.test.ts
-
 node_modules
