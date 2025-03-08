@@ -174,3 +174,11 @@ This section contains extra details about the project configuration and deployme
 - 프롬프트 최적화
 - 응답 품질 향상
 - 포맷팅 개선
+
+## 프롬프트 테스트 3
+프롬프트 개선 후 테스트를 진행합니다.
+
+### 개선된 기능
+- 실제 변경사항 분석 강화
+- 템플릿 텍스트 제거
+- 구체적인 설명 추가
