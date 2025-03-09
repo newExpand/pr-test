@@ -365,3 +365,11 @@ This section contains extra details about the project configuration and deployme
 - AI 프롬프트를 영어로 변경하여 더 정확한 한국어 응답 생성
 - PR 설명 템플릿 구조 개선
 - 체크리스트 자동 마킹 기능 강화
+
+## 테스트 PR 31
+이것은 AI 프롬프트 개선 테스트입니다.
+
+### 개선된 기능
+- AI 프롬프트를 영어로 변경하여 더 정확한 한국어 응답 생성
+- PR 설명 템플릿 구조 개선
+- 체크리스트 자동 마킹 기능 강화
