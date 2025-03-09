@@ -23,5 +23,6 @@
 !src/utils/__tests__/validation.test.ts
 !src/utils/date-formatter.ts
 !src/utils/__tests__/date-formatter.test.ts
+!src/utils/config-manager.ts
 
 node_modules
