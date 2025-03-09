@@ -14,5 +14,6 @@
 !*/*/*.md
 !*/*/*/*.md
 !*/*/*/*/*.md
+!src/core/auth.ts
 
 node_modules
