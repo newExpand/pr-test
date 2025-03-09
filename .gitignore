@@ -15,4 +15,10 @@
 !*/*/*/*.md
 !*/*/*/*/*.md
 
+# Allow specific TypeScript files
+!src/core/auth.ts
+!src/utils/validation.ts
+!src/services/user-service.ts
+!src/utils/pr-template.ts
+
 node_modules
