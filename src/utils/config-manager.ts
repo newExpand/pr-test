@@ -1,22 +1,26 @@
 interface ConfigOptions {
   environment: string;
   debug: boolean;
-  logLevel: "info" | "warn" | "error";
+  logLevel: "info" | "warn" | "error" | "debug";
   maxRetries: number;
   timeout: number;
+  cacheEnabled: boolean;
+  cacheTTL: number;
+  apiKey?: string;
+  apiEndpoint?: string;
 }
 
-class ConfigManager {
+export class ConfigManager {
   private static instance: ConfigManager;
   private config: ConfigOptions;
-  private configPath: string;
+  private readonly configPath: string;
 
-  private constructor(configPath: string) {
+  private constructor(configPath: string = "config.json") {
     this.configPath = configPath;
     this.config = this.loadConfig();
   }
 
-  public static getInstance(configPath: string): ConfigManager {
+  public static getInstance(configPath?: string): ConfigManager {
     if (!ConfigManager.instance) {
       ConfigManager.instance = new ConfigManager(configPath);
     }
@@ -31,6 +35,8 @@ class ConfigManager {
       logLevel: "info",
       maxRetries: 3,
       timeout: 5000,
+      cacheEnabled: true,
+      cacheTTL: 3600,
     };
   }
 
@@ -45,14 +51,51 @@ class ConfigManager {
 
   private saveConfig(): void {
     // 설정 저장 로직
-    console.log("설정이 저장되었습니다.");
+    console.log(`설정이 ${this.configPath}에 저장되었습니다.`);
   }
 
+  // Environment & Debug 관련 메서드
   public getEnvironment(): string {
     return this.config.environment;
   }
 
   public isDebugMode(): boolean {
     return this.config.debug;
+  }
+
+  // Cache 관련 메서드
+  public getCacheTTL(): number {
+    return this.config.cacheTTL;
+  }
+
+  public setCacheTTL(ttl: number): void {
+    if (ttl < 0) {
+      throw new Error("TTL must be a positive number");
+    }
+    this.config.cacheTTL = ttl;
+    this.saveConfig();
+  }
+
+  // Log Level 관련 메서드
+  public getLogLevel(): string {
+    return this.config.logLevel;
+  }
+
+  public setLogLevel(level: "info" | "warn" | "error" | "debug"): void {
+    this.config.logLevel = level;
+    this.saveConfig();
+  }
+
+  // API 인증 관련 메서드
+  public setApiCredentials(apiKey: string, apiEndpoint: string): void {
+    this.config.apiKey = apiKey;
+    this.config.apiEndpoint = apiEndpoint;
+    this.saveConfig();
+  }
+
+  public clearApiCredentials(): void {
+    delete this.config.apiKey;
+    delete this.config.apiEndpoint;
+    this.saveConfig();
   }
 }
