@@ -20,5 +20,6 @@
 !src/utils/validation.ts
 !src/services/user-service.ts
 !src/utils/pr-template.ts
+!src/utils/__tests__/validation.test.ts
 
 node_modules
