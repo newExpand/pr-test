@@ -1,70 +1,80 @@
 type DateFormat = "YYYY-MM-DD" | "MM/DD/YYYY" | "DD-MM-YYYY";
 
-export class DateFormatter {
-  // 타입 정의 누락
-  private format;
+interface DateFormatterOptions {
+  format: DateFormat;
+  timezone?: string;
+}
 
-  constructor(format: DateFormat) {
-    this.format = format;
+export class DateFormatter {
+  private readonly format: DateFormat;
+  private readonly timezone?: string;
+  private readonly cache: Map<string, string>;
+
+  constructor(options: DateFormatterOptions) {
+    this.format = options.format;
+    this.timezone = options.timezone;
+    this.cache = new Map();
   }
 
-  // any 타입 사용
-  formatDate(date: any): string {
+  formatDate(date: Date | string): string {
     try {
-      // Date 객체가 아닌 경우 처리 누락
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-      const day = d.getDate();
+      const dateKey = date instanceof Date ? date.toISOString() : date;
+      const cached = this.cache.get(dateKey);
+      if (cached) return cached;
 
-      // 중복된 코드
-      switch (this.format) {
-        case "YYYY-MM-DD":
-          return `${year}-${month}-${day}`;
-        case "MM/DD/YYYY":
-          return `${month}/${day}/${year}`;
-        case "DD-MM-YYYY":
-          return `${day}-${month}-${year}`;
-        default:
-          return `${year}-${month}-${day}`;
+      const d = date instanceof Date ? date : new Date(date);
+      if (isNaN(d.getTime())) {
+        throw new Error("Invalid date format");
       }
+
+      const formatted = this.formatSingleDate(d);
+      this.cache.set(dateKey, formatted);
+      return formatted;
     } catch (error) {
-      // 에러 처리 미흡
-      return "";
+      console.error("Date formatting error:", error);
+      throw new Error(
+        `Failed to format date: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
-  // 중복된 로직
-  formatDateArray(dates: Date[]): string[] {
-    return dates.map((date) => {
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-      const day = d.getDate();
-
-      switch (this.format) {
-        case "YYYY-MM-DD":
-          return `${year}-${month}-${day}`;
-        case "MM/DD/YYYY":
-          return `${month}/${day}/${year}`;
-        case "DD-MM-YYYY":
-          return `${day}-${month}-${year}`;
-        default:
-          return `${year}-${month}-${day}`;
-      }
-    });
+  formatDateArray(dates: Array<Date | string>): string[] {
+    return dates.map((date) => this.formatDate(date));
   }
 
-  // 테스트하기 어려운 현재 시간 처리
-  getCurrentFormattedDate(): string {
-    const now = new Date();
+  getCurrentFormattedDate(now = new Date()): string {
     return this.formatDate(now);
   }
 
-  // 매직 넘버 사용
   addDays(date: Date, days: number): Date {
+    if (!Number.isInteger(days)) {
+      throw new Error("Days must be an integer");
+    }
+
+    const MAX_DAYS = 365 * 100; // 100년 제한
+    if (Math.abs(days) > MAX_DAYS) {
+      throw new Error(`Days cannot exceed ${MAX_DAYS}`);
+    }
+
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
+  }
+
+  private formatSingleDate(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    switch (this.format) {
+      case "YYYY-MM-DD":
+        return `${year}-${month}-${day}`;
+      case "MM/DD/YYYY":
+        return `${month}/${day}/${year}`;
+      case "DD-MM-YYYY":
+        return `${day}-${month}-${year}`;
+      default:
+        return `${year}-${month}-${day}`;
+    }
   }
 }

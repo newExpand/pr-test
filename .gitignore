@@ -22,5 +22,6 @@
 !src/utils/pr-template.ts
 !src/utils/__tests__/validation.test.ts
 !src/utils/date-formatter.ts
+!src/utils/__tests__/date-formatter.test.ts
 
 node_modules
