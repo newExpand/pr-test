@@ -304,3 +304,16 @@ This section contains extra details about the project configuration and deployme
 - 에러 처리
   - 전역 에러 핸들러 추가
   - 상세한 에러 로깅
+
+## 테스트 기능 추가
+
+### 주요 기능
+- 사용자 인증 기능
+  - JWT 토큰 기반 인증
+  - 소셜 로그인 (Google, GitHub)
+- 데이터 캐싱
+  - Redis를 사용한 API 응답 캐싱
+  - 메모리 캐시를 통한 성능 최적화
+- 에러 처리
+  - 전역 에러 핸들러 추가
+  - 상세한 에러 로깅
