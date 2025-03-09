@@ -1,60 +1,58 @@
 interface ConfigOptions {
-  cacheEnabled: boolean;
-  cacheTTL: number;
+  environment: string;
+  debug: boolean;
+  logLevel: "info" | "warn" | "error";
   maxRetries: number;
   timeout: number;
-  logLevel: "debug" | "info" | "warn" | "error";
 }
 
-export class ConfigManager {
-  private config: ConfigOptions;
+class ConfigManager {
   private static instance: ConfigManager;
+  private config: ConfigOptions;
+  private configPath: string;
 
-  private constructor(options: Partial<ConfigOptions> = {}) {
-    this.config = {
-      cacheEnabled: false, // 기본값 변경
-      cacheTTL: 1800, // 기본값 변경
-      maxRetries: 5, // 기본값 변경
-      timeout: 3000, // 기본값 변경
-      logLevel: "info", // 새로운 옵션
-      ...options,
-    };
+  private constructor(configPath: string) {
+    this.configPath = configPath;
+    this.config = this.loadConfig();
   }
 
-  static getInstance(options?: Partial<ConfigOptions>): ConfigManager {
+  public static getInstance(configPath: string): ConfigManager {
     if (!ConfigManager.instance) {
-      ConfigManager.instance = new ConfigManager(options);
+      ConfigManager.instance = new ConfigManager(configPath);
     }
     return ConfigManager.instance;
   }
 
-  getConfig(): ConfigOptions {
-    return { ...this.config };
-  }
-
-  updateConfig(options: Partial<ConfigOptions>): void {
-    this.config = {
-      ...this.config,
-      ...options,
+  private loadConfig(): ConfigOptions {
+    // 설정 파일 로드 로직
+    return {
+      environment: "development",
+      debug: true,
+      logLevel: "info",
+      maxRetries: 3,
+      timeout: 5000,
     };
   }
 
-  getCacheTTL(): number {
-    return this.config.cacheTTL;
+  public getConfig(): ConfigOptions {
+    return { ...this.config };
   }
 
-  setCacheTTL(ttl: number): void {
-    if (ttl < 0) {
-      throw new Error("TTL must be a positive number");
-    }
-    this.config.cacheTTL = ttl;
+  public updateConfig(newConfig: Partial<ConfigOptions>): void {
+    this.config = { ...this.config, ...newConfig };
+    this.saveConfig();
   }
 
-  getLogLevel(): string {
-    return this.config.logLevel;
+  private saveConfig(): void {
+    // 설정 저장 로직
+    console.log("설정이 저장되었습니다.");
   }
 
-  setLogLevel(level: "debug" | "info" | "warn" | "error"): void {
-    this.config.logLevel = level;
+  public getEnvironment(): string {
+    return this.config.environment;
+  }
+
+  public isDebugMode(): boolean {
+    return this.config.debug;
   }
 }
